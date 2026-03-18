@@ -66,9 +66,14 @@ class BundleCreator(object):
 
         bundle_yml_file = src_dir + "/bundle.yml"
 
+        arch_dir=self.get("arch_dir", "arch")
+        if os.path.isabs(arch_dir):
+            symlink_force(arch_dir, src_dir + "/arch")
+        else:
+            symlink_force(os.path.dirname(bundle.file()) + f"/{arch_dir}", src_dir + "/arch")
+
         if self.bundle_needs_updating():
             symlink_force(bundle.file(), bundle_yml_file)
-            symlink_force(os.path.dirname(bundle.file()) + "/arch", src_dir + "/arch")
 
             self.create_cmakelists_from_bundle()
 
