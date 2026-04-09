@@ -33,6 +33,9 @@ class BundleCreator(object):
     def src_dir(self):
         return fullpath(self.get("src_dir", "source"))
 
+    def arch_dir(self):
+        return self.get("arch_dir", "arch")
+
     def bundle(self):
         bundle_path = fullpath(self.get("bundle", None))
         if bundle_path:
@@ -66,7 +69,7 @@ class BundleCreator(object):
 
         bundle_yml_file = src_dir + "/bundle.yml"
 
-        arch_dir = self.get("arch_dir", "arch")
+        arch_dir = self.arch_dir()
         if os.path.isabs(arch_dir):
             symlink_force(arch_dir, src_dir + "/arch")
         else:

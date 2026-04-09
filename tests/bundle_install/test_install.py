@@ -70,6 +70,7 @@ def args(here):
         "cmake": None,
         "project1.cmake": None,
         "arch": None,
+        "arch_dir": "%s" % (here / "arch"),
         "build_type": "BIT",
         "bundle": "%s" % here,
     }
@@ -79,6 +80,7 @@ def test_build_install(args, here, cleanup, watcher):
     src_dir = here / "source"
     build_dir = here / "build"
     install_dir = here / "install"
+    arch_dir = here / "arch"
 
     args["dryrun"] = False
     args["dry_run"] = False
