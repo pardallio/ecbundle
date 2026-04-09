@@ -80,7 +80,6 @@ def test_build_install(args, here, cleanup, watcher):
     src_dir = here / "source"
     build_dir = here / "build"
     install_dir = here / "install"
-    arch_dir = here / "arch"
 
     args["dryrun"] = False
     args["dry_run"] = False
