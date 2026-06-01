@@ -6,8 +6,8 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-import os
 import copy
+import os
 from collections import OrderedDict
 
 from .bundle import Bundle
