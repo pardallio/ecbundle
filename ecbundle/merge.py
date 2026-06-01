@@ -8,11 +8,10 @@
 
 import copy
 import os
-from collections import OrderedDict
 
 from .bundle import Bundle
 from .logging import error, header, success
-from .util import fullpath, mkdir_p, symlink_force
+from .util import fullpath
 
 __all__ = ["BundleMerger"]
 
