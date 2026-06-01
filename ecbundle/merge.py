@@ -23,7 +23,7 @@ class BundleMerger(object):
 
     def get(self, key, default=None):
         return self.config[key] if self.config[key] is not None else default
-    
+
     def deep_merge(self, original, updates):
         """Recursively merge `updates` into `original`.
 
@@ -48,9 +48,9 @@ class BundleMerger(object):
             return copy.deepcopy(updates)
 
         return merged
-    
-    def bundle(self,update=False):
-        arg="bundle"
+
+    def bundle(self, update=False):
+        arg = "bundle"
         if update:
             arg += "_update"
         bundle_path = fullpath(self.get(arg, None))
@@ -58,69 +58,59 @@ class BundleMerger(object):
             if os.path.isfile(bundle_path):
                 return Bundle(bundle_path, env=True)
             if not os.path.isdir(bundle_path):
-                error(
-                    f"ERROR: --{arg} argument is not a valid bundle file path"
-                )
+                error(f"ERROR: --{arg} argument is not a valid bundle file path")
                 return None
 
         return None
 
     def merge(self):
         bundle = self.bundle()
-        bundle_update = self.bundle(update = True)
-        if not (bundle and bundle_update) :
+        bundle_update = self.bundle(update=True)
+        if not (bundle and bundle_update):
             return 1
 
         success("\nMerging bundle  ")
         header(f"    {bundle_update.file()} into {bundle.file()}")
-        
+
         # merging projects
         project_dict = {
-            item.config["name"]: {
-                k: v for k, v in item.config.items() if k != "name"
-            }
+            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
             for item in bundle.projects()
         }
-        
+
         updated_project_dict = {
-            item.config["name"]: {
-                k: v for k, v in item.config.items() if k != "name"
-            }
+            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
             for item in bundle_update.projects()
         }
-        
-        updated_dict = self.deep_merge(project_dict,updated_project_dict)
 
-        bundle.config["projects"] = [{key:value} for key,value in updated_dict.items()]
+        updated_dict = self.deep_merge(project_dict, updated_project_dict)
+
+        bundle.config["projects"] = [
+            {key: value} for key, value in updated_dict.items()
+        ]
 
         # merging options
         option_dict = {
-            item.config["name"]: {
-                k: v for k, v in item.config.items() if k != "name"
-            }
+            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
             for item in bundle.options()
         }
 
         updated_option_dict = {
-            item.config["name"]: {
-                k: v for k, v in item.config.items() if k != "name"
-            }
+            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
             for item in bundle_update.options()
         }
-        
-        updated_dict = self.deep_merge(option_dict,updated_option_dict)
 
-        bundle.config["options"] = [{key:value} for key,value in updated_dict.items()]
+        updated_dict = self.deep_merge(option_dict, updated_option_dict)
+
+        bundle.config["options"] = [{key: value} for key, value in updated_dict.items()]
 
         # merge remaining keys
 
         for key in bundle_update.config.keys():
-            if key not in ["projects","options"]:
+            if key not in ["projects", "options"]:
                 bundle.config[key] = bundle_update.get(key)
 
         with open(self.get("o", None), "w", encoding="utf-8") as f:
             f.write(bundle.yaml())
 
         return 0
-
-
