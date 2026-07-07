@@ -11,12 +11,13 @@ usage()
     echo "       ecbundle create [--help]"
     echo "       ecbundle populate  [--help]"
     echo "       ecbundle build  [--help]"
+    echo "       ecbundle configure  [--help]"
 }
 
 
 # Check at least one argument was provided:
 if [[ $# -eq 0 ]]; then
-  echo "ERROR: At least one argument expected: '--version', 'build', 'create' or 'populate'"
+  echo "ERROR: At least one argument expected: '--version', 'build', 'create', 'configure' or 'populate'"
   usage
   exit 1
 fi
@@ -34,11 +35,14 @@ elif [[ "build" == "$1"* ]]; then
 elif [[ "create" == "$1"* ]]; then
   shift
   ${SCRIPT_DIR}/ecbundle-create "$@"
+elif [[ "configure" == "$1"* ]]; then
+  shift
+  ${SCRIPT_DIR}/ecbundle-configure "$@"
 elif [[ "populate" == "$1"* ]]; then
   shift
   ${SCRIPT_DIR}/ecbundle-populate "$@"
 else
-  echo "ERROR: Expected 'build' or 'create' or 'populate' as first argument"
+  echo "ERROR: Expected 'build', 'create', 'configure' or 'populate' as first argument"
   usage
   exit 1
 fi

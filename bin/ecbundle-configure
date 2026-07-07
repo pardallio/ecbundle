@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+# (C) Copyright 2020- ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
+
+"""
+Script to configure an already created bundle with 'ecbundle-create' companion script
+"""
+
+import os
+import sys
+import subprocess
+
+import importlib.util
+import importlib.machinery
+import sys
+from pathlib import Path
+from argparse import ArgumentParser, RawTextHelpFormatter
+
+def main():
+    
+
+    build_script_path = Path(f"{os.path.dirname(os.path.realpath(__file__))}/ecbundle-build")  # full path to the file
+
+    loader = importlib.machinery.SourceFileLoader("ecbundle_build", str(build_script_path))
+    spec = importlib.util.spec_from_loader("ecbundle_build", loader)
+    build = importlib.util.module_from_spec(spec)
+    sys.modules["ecbundle_build"] = build
+    loader.exec_module(build)
+    
+    parser = ArgumentParser(description=__doc__,
+                            formatter_class=RawTextHelpFormatter)
+
+    parser.add_argument('--build-dir',
+                    default="build",
+                    help='Directory where package will be built')
+
+    args,rem = parser.parse_known_args()
+
+    if "--dry-run" not in sys.argv:
+        sys.argv += ["--dry-run"]
+    
+    # Now call the main function
+    build.main()
+
+    subprocess.run(
+        ["./configure.sh"],
+        cwd=args.build_dir,
+        check=True,
+    )
+if __name__ == '__main__':
+    sys.exit(main())
