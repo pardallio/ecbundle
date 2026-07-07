@@ -70,6 +70,7 @@ def args(here):
         "cmake": None,
         "project1.cmake": None,
         "arch": None,
+        "arch_dir": "%s" % (here / "arch"),
         "build_type": "BIT",
         "bundle": "%s" % here,
     }
