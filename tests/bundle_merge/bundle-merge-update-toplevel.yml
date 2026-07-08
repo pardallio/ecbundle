@@ -1,0 +1,2 @@
+name    : merge-test-renamed
+cmake   : CMAKE_BUILD_TYPE=Debug
