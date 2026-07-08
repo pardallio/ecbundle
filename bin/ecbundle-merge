@@ -37,13 +37,13 @@ def main():
     parser.add_argument('--verbose', '-v',
                         help='Verbose output',
                         action='store_true')
+    
+    parser.add_argument('bundles',
+                        help='Bundle files: the first is the original bundle, '
+                             'any following are update bundles applied in order',
+                        nargs='+')
 
-    parser.add_argument('--bundle',
-                        help='Configuration of bundle', default="bundle.yml")
-
-    parser.add_argument('--bundle-update',
-                        help='Configuration of bundle update', default="bundle-update.yml")
-
+    
     parser.add_argument('-o',
                         help='output file', default="merged-bundle.yml")
 
@@ -51,6 +51,9 @@ def main():
 
     # Close parser and populate variable args
     args = parser.parse_args()
+
+    if len(args.bundles) < 2:
+            parser.error('at least one update bundle is required in addition to the original')
 
     # Explicitly disable coloured logs
     if args.no_colour:

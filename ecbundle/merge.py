@@ -10,7 +10,7 @@ import copy
 import os
 
 from .bundle import Bundle
-from .logging import error, header, success
+from .logging import error, header, success,info
 from .util import fullpath
 
 __all__ = ["BundleMerger"]
@@ -21,14 +21,14 @@ class BundleMerger(object):
         self.config = kwargs
 
     def get(self, key, default=None):
-        return self.config[key] if self.config[key] is not None else default
+        return self.config[key] if self.config.get(key) is not None else default
 
     def deep_merge(self, original, updates):
         """Recursively merge `updates` into `original`.
 
         Rules:
-        - Dictionaries and  are merged recursively.
-        - lists and scalar values are replaced entirely.
+        - Dictionaries are merged recursively.
+        - Lists and scalar values are replaced entirely.
         - Keys missing from `updates` remain unchanged.
         """
         if isinstance(original, dict) and isinstance(updates, dict):
@@ -39,77 +39,80 @@ class BundleMerger(object):
                         merged[key] = self.deep_merge(merged[key], value)
                     else:
                         merged[key] = copy.deepcopy(value)
-
                 else:
                     merged[key] = copy.deepcopy(value)
+            return merged
 
-        else:
-            return copy.deepcopy(updates)
+        return copy.deepcopy(updates)
 
-        return merged
+    def _load_bundle(self, path, label):
+        """Load a bundle file from `path`, or return None with an error."""
+        bundle_path = fullpath(path)
+        if bundle_path and os.path.isfile(bundle_path):
+            return Bundle(bundle_path, env=True)
 
-    def bundle(self, update=False):
-        arg = "bundle"
-        if update:
-            arg += "_update"
-        bundle_path = fullpath(self.get(arg, None))
-        if bundle_path:
-            if os.path.isfile(bundle_path):
-                return Bundle(bundle_path, env=True)
-            if not os.path.isdir(bundle_path):
-                error(f"ERROR: --{arg} argument is not a valid bundle file path")
-                return None
-
+        error(f"ERROR: {label} '{path}' is not a valid bundle file path")
         return None
 
-    def merge(self):
-        bundle = self.bundle()
-        bundle_update = self.bundle(update=True)
-        if not (bundle and bundle_update):
-            return 1
-
-        success("\nMerging bundle  ")
-        header(f"    {bundle_update.file()} into {bundle.file()}")
-
-        # merging projects
-        project_dict = {
+    def _merge_named_list(self, base_bundle, key, base_items, update_items):
+        """Merge a named-item list (projects/options) from update into base."""
+        base_dict = {
             item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
-            for item in bundle.projects()
+            for item in base_items
+        }
+        update_dict = {
+            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
+            for item in update_items
         }
 
-        updated_project_dict = {
-            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
-            for item in bundle_update.projects()
-        }
+        merged = self.deep_merge(base_dict, update_dict)
+        base_bundle.config[key] = [{name: value} for name, value in merged.items()]
 
-        updated_dict = self.deep_merge(project_dict, updated_project_dict)
+    def _apply_update(self, bundle, bundle_update):
+        """Fold a single update bundle into `bundle` in place."""
+        header("\nMerging bundle")
+        info(f"    {bundle_update.file()}")
 
-        bundle.config["projects"] = [
-            {key: value} for key, value in updated_dict.items()
-        ]
-
-        # merging options
-        option_dict = {
-            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
-            for item in bundle.options()
-        }
-
-        updated_option_dict = {
-            item.config["name"]: {k: v for k, v in item.config.items() if k != "name"}
-            for item in bundle_update.options()
-        }
-
-        updated_dict = self.deep_merge(option_dict, updated_option_dict)
-
-        bundle.config["options"] = [{key: value} for key, value in updated_dict.items()]
-
-        # merge remaining keys
+        self._merge_named_list(bundle, "projects",
+                            bundle.projects(), bundle_update.projects())
+        self._merge_named_list(bundle, "options",
+                            bundle.options(), bundle_update.options())
 
         for key in bundle_update.config.keys():
-            if key not in ["projects", "options"]:
+            if key not in ("projects", "options"):
                 bundle.config[key] = bundle_update.get(key)
+        success(f"Bundle succesfully merged")
 
-        with open(self.get("o", None), "w", encoding="utf-8") as f:
+    def merge(self):
+        bundles = self.get("bundles", [])
+        if not bundles or len(bundles) < 2:
+            error("ERROR: need at least one original bundle and one update bundle")
+            return 1
+        
+        header("\nMerging bundles:")
+        for bundle in bundles:
+            info(f" - {bundle}")
+
+        original_path, *update_paths = bundles
+
+
+        bundle = self._load_bundle(original_path, "original bundle")
+        if bundle is None:
+            return 1
+
+        for path in update_paths:
+            bundle_update = self._load_bundle(path, "update bundle")
+            if bundle_update is None:
+                return 1
+            self._apply_update(bundle, bundle_update)
+
+
+        output_path = self.get("output", "merged-bundle.yml")
+        
+        header("\nWriting merge result into:")
+        info(f" - {output_path}")
+
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(bundle.yaml())
-
+        success(f"Bundles succesfully merged\n")
         return 0
