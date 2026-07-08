@@ -121,6 +121,7 @@ def test_merge_requires_at_least_one_update(here, out_dir):
 # Options section
 # ---------------------------------------------------------------------------
 
+
 def test_merge_updates_existing_option(here, out_dir):
     """An option present in both base and update should take the update's values."""
     base = here / "bundle-merge-base.yml"
@@ -189,6 +190,7 @@ def test_merge_multiple_option_updates_apply_in_order(here, out_dir):
 # Top-level scalar keys
 # ---------------------------------------------------------------------------
 
+
 def test_merge_overrides_toplevel_scalars(here, out_dir):
     """Top-level scalar keys like `name` and `cmake` must be overridden by the update."""
     base = here / "bundle-merge-base.yml"
@@ -225,9 +227,9 @@ def test_merge_toplevel_update_preserves_projects_and_options(here, out_dir):
 def test_merge_mixed_updates_across_sections(here, out_dir):
     """Chained updates touching different sections should all be reflected."""
     base = here / "bundle-merge-base.yml"
-    upd_projects = here / "bundle-merge-update.yml"          # touches projects
-    upd_options = here / "bundle-merge-update-options.yml"   # touches options
-    upd_toplevel = here / "bundle-merge-update-toplevel.yml" # touches scalars
+    upd_projects = here / "bundle-merge-update.yml"  # touches projects
+    upd_options = here / "bundle-merge-update-options.yml"  # touches options
+    upd_toplevel = here / "bundle-merge-update-toplevel.yml"  # touches scalars
     output = out_dir / "merged.yml"
 
     rc = BundleMerger(

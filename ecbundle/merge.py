@@ -10,7 +10,7 @@ import copy
 import os
 
 from .bundle import Bundle
-from .logging import error, header, success,info
+from .logging import error, header, info, success
 from .util import fullpath
 
 __all__ = ["BundleMerger"]
@@ -73,10 +73,12 @@ class BundleMerger(object):
         header("\nMerging bundle")
         info(f"    {bundle_update.file()}")
 
-        self._merge_named_list(bundle, "projects",
-                            bundle.projects(), bundle_update.projects())
-        self._merge_named_list(bundle, "options",
-                            bundle.options(), bundle_update.options())
+        self._merge_named_list(
+            bundle, "projects", bundle.projects(), bundle_update.projects()
+        )
+        self._merge_named_list(
+            bundle, "options", bundle.options(), bundle_update.options()
+        )
 
         for key in bundle_update.config.keys():
             if key not in ("projects", "options"):
@@ -88,13 +90,12 @@ class BundleMerger(object):
         if not bundles or len(bundles) < 2:
             error("ERROR: need at least one original bundle and one update bundle")
             return 1
-        
+
         header("\nMerging bundles:")
         for bundle in bundles:
             info(f" - {bundle}")
 
         original_path, *update_paths = bundles
-
 
         bundle = self._load_bundle(original_path, "original bundle")
         if bundle is None:
@@ -106,9 +107,8 @@ class BundleMerger(object):
                 return 1
             self._apply_update(bundle, bundle_update)
 
-
         output_path = self.get("output", "merged-bundle.yml")
-        
+
         header("\nWriting merge result into:")
         info(f" - {output_path}")
 
