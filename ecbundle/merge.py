@@ -83,7 +83,7 @@ class BundleMerger(object):
         for key in bundle_update.config.keys():
             if key not in ("projects", "options"):
                 bundle.config[key] = bundle_update.get(key)
-        success(f"Bundle succesfully merged")
+        success("Bundle succesfully merged")
 
     def merge(self):
         bundles = self.get("bundles", [])
@@ -114,5 +114,5 @@ class BundleMerger(object):
 
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(bundle.yaml())
-        success(f"Bundles succesfully merged\n")
+        success("Bundles succesfully merged\n")
         return 0
