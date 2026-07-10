@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+
+# (C) Copyright 2020- ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
+"""
+Script to merge and update bundle files
+"""
+
+import os
+import sys
+from argparse import SUPPRESS, ArgumentParser, RawTextHelpFormatter
+
+sys.path.insert(0, os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/..'))
+from ecbundle import BundleMerger
+from ecbundle.logging import DEBUG, colors, error, logger, success
+
+
+def main():
+
+    # Parse arguments
+    parser = ArgumentParser(description=__doc__,
+                            formatter_class=RawTextHelpFormatter)
+
+    # --------------------------------------------------------------------------
+    # Parse common subcommands
+    # --------------------------------------------------------------------------
+    parser.add_argument('--no-colour', '--no-color',
+                        help='Disable color output',
+                        action='store_true')
+
+    parser.add_argument('--verbose', '-v',
+                        help='Verbose output',
+                        action='store_true')
+    
+    parser.add_argument('bundles',
+                        help='Bundle files: the first is the original bundle, '
+                             'any following are update bundles applied in order',
+                        nargs='+')
+
+    
+    parser.add_argument('-o',
+                        help='output file', default="merged-bundle.yml")
+
+    # --------------------------------------------------------------------------
+
+    # Close parser and populate variable args
+    args = parser.parse_args()
+
+    if len(args.bundles) < 2:
+            parser.error('at least one update bundle is required in addition to the original')
+
+    # Explicitly disable coloured logs
+    if args.no_colour:
+        colors.disable()
+
+    # Log everything, including commands executed
+    if args.verbose:
+        logger.setLevel(DEBUG)
+
+
+    errcode = 0
+
+    if BundleMerger(**vars(args)).merge() != 0:
+        errcode = 1 # error
+
+    if errcode == 1:
+        error("\n!!! Errors occured !!!")
+
+    return errcode
+
+if __name__ == '__main__':
+    sys.exit(main())

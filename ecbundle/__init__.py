@@ -12,6 +12,7 @@ from ecbundle.create import *  # noqa
 from ecbundle.download import *  # noqa
 from ecbundle.git import *  # noqa
 from ecbundle.logging import *  # noqa
+from ecbundle.merge import *  # noqa
 from ecbundle.option import *  # noqa
 from ecbundle.populate import *  # noqa
 from ecbundle.project import *  # noqa
