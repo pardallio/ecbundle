@@ -1,0 +1,9 @@
+options :
+
+    - with-openmp :
+        help    : OpenMP (final)
+        cmake   : ENABLE_OMP=ON
+
+    - with-gpu :
+        help    : GPU (final)
+        cmake   : ENABLE_GPU=ON

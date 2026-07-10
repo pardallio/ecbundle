@@ -1,0 +1,4 @@
+projects :  
+  
+    - project1 :  
+        version : updated-branch

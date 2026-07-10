@@ -74,6 +74,9 @@ class Project(object):
         else:
             return None
 
+    def get_dict(self):
+        return self.config
+
     def optional(self):
         return self.get("optional", False)
 

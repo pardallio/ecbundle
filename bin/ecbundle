@@ -37,6 +37,9 @@ elif [[ "create" == "$1"* ]]; then
 elif [[ "populate" == "$1"* ]]; then
   shift
   ${SCRIPT_DIR}/ecbundle-populate "$@"
+elif [[ "merge" == "$1"* ]]; then
+  shift
+  ${SCRIPT_DIR}/ecbundle-merge "$@"
 else
   echo "ERROR: Expected 'build' or 'create' or 'populate' as first argument"
   usage
