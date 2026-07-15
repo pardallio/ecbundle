@@ -1,0 +1,6 @@
+projects :  
+  
+    - project1 :  
+        erase : true
+
+      
