@@ -44,7 +44,7 @@ def main():
                         nargs='+')
 
     
-    parser.add_argument('-o',
+    parser.add_argument('--output','-o',
                         help='output file', default="merged-bundle.yml")
 
     # --------------------------------------------------------------------------
