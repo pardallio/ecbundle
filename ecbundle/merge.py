@@ -34,15 +34,15 @@ class BundleMerger(object):
         if isinstance(original, dict) and isinstance(updates, dict):
             merged = copy.deepcopy(original)
             for key, value in updates.items():
-                if isinstance(value, dict) and value.get("erase",False):
-                    merged.pop(key,None)
+                if isinstance(value, dict) and value.get("erase", False):
+                    merged.pop(key, None)
                     continue
                 if key in merged:
                     if isinstance(merged[key], dict) and isinstance(value, dict):
                         merged[key] = self.deep_merge(merged[key], value)
                     else:
                         merged[key] = copy.deepcopy(value)
-                elif key!="erase":                        
+                elif key != "erase":
                     merged[key] = copy.deepcopy(value)
             return merged
 
