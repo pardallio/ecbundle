@@ -1,0 +1,22 @@
+name    : merge-test-full
+cmake   : CMAKE_BUILD_TYPE=Release
+
+options :
+
+    - without-mpi :
+        help    : Disable MPI
+        cmake   : ENABLE_MPI=OFF
+
+    - with-gpu :
+        help    : Enable GPU support
+        cmake   : ENABLE_GPU=ON
+
+projects :
+
+    - project1 :
+        git     : https://github.com/example/project1
+        version : main
+
+    - project2 :
+        git     : https://github.com/example/project2
+        version : main

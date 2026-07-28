@@ -1,0 +1,9 @@
+options :
+
+    - without-mpi :
+        help    : MPI disabled (updated)
+        cmake   : ENABLE_MPI=OFF
+
+    - with-openmp :
+        help    : Enable OpenMP
+        cmake   : ENABLE_OMP=ON

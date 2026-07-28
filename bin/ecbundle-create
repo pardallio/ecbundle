@@ -51,6 +51,9 @@ def main():
     parser.add_argument('--src-dir',
                         help='Directory containing repositories', default='source')
 
+    parser.add_argument('--arch-dir',
+                        help='Directory containing supported architectures', default='arch')
+
     parser.add_argument('--update',
                         help='Update local checkout with remote changes',
                         action='store_true')
