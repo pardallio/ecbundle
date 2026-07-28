@@ -55,6 +55,20 @@ def test_merge_single_update(here, out_dir):
     assert "updated-branch" in content
 
 
+def test_merge_single_erase(here, out_dir):
+    """Original bundle merged with a single update file."""
+    base = here / "bundle-merge-base.yml"
+    upd = here / "bundle-merge-erase.yml"
+    output = out_dir / "merged.yml"
+
+    rc = BundleMerger(**_args([base, upd], output)).merge()
+
+    assert rc == 0
+    assert output.exists()
+    content = output.read_text()
+    assert "project1" not in content
+
+
 def test_merge_multiple_updates_applied_in_order(here, out_dir):
     """With two updates, the later one wins on conflicting fields."""
     base = here / "bundle-merge-base.yml"
